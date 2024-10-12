@@ -287,18 +287,19 @@ else:
     )
 
     if st.button("Submit"):
-        # Code to run when the button is pressed
-        parsed_rec = st.session_state["parsed_rec"]
-        contract = {
-            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "timestamp": time.time(),
-            "traded_to": selected_companies[0],
-            "company_credits_earned": int(company_prices[selected_companies[0]]),
-            "user": st.session_state.username + "@gmail.com",
-            "REC_credits_traded": int(parsed_rec["co2"]),
-        }
-
-        rec_collection.insert_one(contract)
+        with st.spinner("Transacting..."):
+            # Code to run when the button is pressed
+            parsed_rec = st.session_state["parsed_rec"]
+            contract = {
+                "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "timestamp": time.time(),
+                "traded_to": selected_companies[0],
+                "company_credits_earned": int(company_prices[selected_companies[0]]),
+                "user": st.session_state.username + "@gmail.com",
+                "REC_credits_traded": int(parsed_rec["co2"]),
+            }
+            time.sleep(2)
+            rec_collection.insert_one(contract)
 
         st.toast("Contract uploaded successfully!", icon="🚀")
         time.sleep(2)
