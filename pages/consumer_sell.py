@@ -1,10 +1,7 @@
 import streamlit as st
-from PIL import Image
-import pytesseract
 import json
-import time
 from openai import OpenAI
-from lib.APIKeys import OPEN_AI_API_KEY
+from APIKeys import OPEN_AI_API_KEY
 from navigation import make_sidebar
 
 
