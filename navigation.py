@@ -53,6 +53,12 @@ def make_sidebar():
                 st.page_link(
                     "pages/business_sell.py", label="Sell your Credits", icon="🔒"
                 )
+                st.page_link(
+                    "pages/business_market.py", label="MarketPlace", icon="🛒"
+                )
+                st.page_link(
+                    "pages/business_list_credits.py", label="List Energy Credits", icon="⚡"
+                )
             else:
                 st.page_link(
                     "pages/consumer_transaction_history.py",
