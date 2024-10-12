@@ -1,2 +1,0 @@
-OPEN_AI_API_KEY = "sk-proj" \
-                  "-otkKHX_ZS4f62bhVyEwpzbOUGvCP5dqjzvVkyRr3k8KJ3zgjOzg3s8Ka6EJQsB7yPRRMmDSSo0T3BlbkFJiAqZPHxpgS5G2cUZ7LKyLi23K7XHY6g9d7-ROUt6Jmgh33qBvVKuCv__CGc0CxLSGgFSVFCJ0A"

@@ -1,10 +1,19 @@
+import time
+
 import streamlit as st
+import pytesseract
+from PIL import Image
+
 from navigation import make_sidebar
+from pages.consumer_sell import parse_rec
 
 make_sidebar()
 
 # Title of the app
 st.title("Upload Clean Energy Contract")
+
+if 'company_page' not in st.session_state:
+    st.session_state['company_page'] = 0
 
 # Custom CSS for borders and search bar/button styles
 st.markdown(
@@ -31,6 +40,10 @@ st.markdown(
         }
         .company-name {
             font-size: 20px;
+        }
+        .company-titles {
+            font-size: 24px;
+            font-weight: bold;
         }
         .full-width-search {
             width: 100%;
@@ -152,8 +165,20 @@ with col2:
     }
 
     selected_companies = []
+    col_name, col_price, col_checkbox = st.columns([3, 1, 1])
+    with col_name:
+        st.markdown(
+            f'<div class="company-titles">Company</div>', unsafe_allow_html=True
+        )
+    with col_price:
+        st.markdown(
+            f'<div class="company-titles">Price</div>', unsafe_allow_html=True
+        )
+
+    print(filtered_companies)
+
     for company, logo_url in filtered_companies.items():
-        col_checkbox, col_image, col_name = st.columns([1, 1, 5])
+        col_image, col_name, col_price, col_checkbox = st.columns([1, 2, 1, 1])
         with col_checkbox:
             is_selected = st.checkbox("", key=company)
             selected_companies.append((company, is_selected))
@@ -162,6 +187,10 @@ with col2:
         with col_name:
             st.markdown(
                 f'<div class="company-name">{company}</div>', unsafe_allow_html=True
+            )
+        with col_price:
+            st.markdown(
+                f'<div class="company-name">${100}</div>', unsafe_allow_html=True
             )
 
     selected_companies = [
