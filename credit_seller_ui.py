@@ -30,15 +30,21 @@ def parse_rec(rec):
         return f"Error: {e}"
 
 
+def navigate_to(page):
+    st.session_state['page'] = page
+
+
+st.set_page_config(layout="wide")
+st.sidebar.title("Navigation")
+st.sidebar.button("Dashboard", on_click=navigate_to, args=("consumer_dash",))
+st.sidebar.button("Upload Contract", on_click=navigate_to, args=("upload_rec",))
+
 if 'file_processed' not in st.session_state:
     st.session_state['file_processed'] = False
 if 'parsed_rec' not in st.session_state:
     st.session_state['parsed_rec'] = None
 if 'page' not in st.session_state:
     st.session_state['page'] = 'consumer_dash'
-
-# Set page width to full
-st.set_page_config(layout="wide")
 
 if st.session_state['page'] == 'consumer_dash':
     st.title("Contract Management Dashboard")
@@ -63,9 +69,6 @@ if st.session_state['page'] == 'consumer_dash':
         st.subheader("Date: October 12, 2024")
         st.text("Tons of CO2: 300")
         st.text("Companies: Nike, Samsung")
-
-        if st.button("Upload a contract"):
-            st.session_state['page'] = 'upload_rec'
 
     # Right column: Completed Orders
     with col2:
@@ -256,6 +259,6 @@ elif st.session_state['page'] == 'upload_rec':
         """, unsafe_allow_html=True)
 
     # Create a button with custom styles
-    if st.markdown('<button class="full-width-button">Upload Contract</button>', unsafe_allow_html=True):
+    if st.button('Upload Contract', key='upload contract'):
         # Code to run when the button is pressed
         st.session_state['page'] = 'consumer_dash'
