@@ -2,16 +2,6 @@ import streamlit as st
 import pandas as pd
 from navigation import make_sidebar
 
-# Initialize session state for balances, credits, and purchases
-if "credits" not in st.session_state:
-    st.session_state["credits"] = []
-
-if "purchased_credits" not in st.session_state:
-    st.session_state["purchased_credits"] = []
-
-if "balance" not in st.session_state and st.session_state.get("role") == "business":
-    st.session_state["balance"] = 100000  # Initial balance for businesses
-
 make_sidebar()
 
 st.markdown(
@@ -46,114 +36,87 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+db = st.session_state.dbClient["hackharvard"]
+company_collection = db["company"]
+rec_collection = db["business_rec"]
 
-# Function to display the business dashboard
-def business_dashboard():
-    st.header("Business Dashboard")
+st.header("Energy Contract Marketplace")
+# Centered Filters using Columns
+col1, col2 = st.columns(2)
 
-    # Display Current Balance
-    st.subheader("Current Balance")
-    st.write(f"**${st.session_state['balance']:.2f}**")
+with col1:
+    min_amount = st.slider("Minimum Amount (metric tonnes)", 0.0, 500.0, 0.0, step=10.0)
 
-    # Display Purchased Credits
-    st.subheader("Purchased Carbon Credits")
-    if st.session_state["purchased_credits"]:
-        df_purchased = pd.DataFrame(st.session_state["purchased_credits"])
-        st.table(df_purchased)
+with col2:
+    max_price = st.slider("Maximum Price ($)", 0.0, 1000.0, 1000.0, step=50.0)
 
-        # Calculate Total Value
-        total_value = df_purchased["Price"].sum()
-        st.write(f"**Total Value of Purchased Credits:** ${total_value:.2f}")
+db = st.session_state.dbClient["hackharvard"]
+contracts = (
+    rec_collection.find(
+        {"traded_from": {"$ne": st.session_state.username + "@gmail.com"}}
+    )
+    .sort([("timestamp", -1)])
+    .limit(10)
+)
+contracts = list(contracts)
+print(contracts)
 
-        # Calculate Total Carbon Emission Offset
-        total_offset = df_purchased["Amount"].sum()
-        st.write(
-            f"**Total Carbon Emission Offset:** {total_offset} metric tonnes of CO₂"
-        )
-    else:
-        st.info("No credits purchased yet.")
+# Apply Filters
+available_credits = [
+    credit
+    for credit in contracts
+    if credit["is_offer_in_market"]
+    and credit["REC_credits_traded"] >= min_amount
+    and credit["price_of_contract"] <= max_price
+]
 
-
-# Function to browse and purchase credits (for businesses)
-def browse_and_purchase():
-    st.header("Browse Carbon Credits")
-
-    # Centered Filters using Columns
-    col1, col2, col3 = st.columns(3)
-
+selected_contracts = []
+if available_credits:
+    col1, col2 = st.columns([5, 1])
     with col1:
-        min_amount = st.slider(
-            "Minimum Amount (metric tonnes)", 0.0, 500.0, 0.0, step=10.0
-        )
-
-    with col2:
-        max_price = st.slider("Maximum Price ($)", 0.0, 1000.0, 1000.0, step=50.0)
-
-    with col3:
-        verified_only = st.checkbox("Show Only Verified Credits")
-
-    # Apply Filters
-    available_credits = [
-        credit
-        for credit in st.session_state["credits"]
-        if credit["Purchased By"] is None
-        and credit["Amount"] >= min_amount
-        and credit["Price"] <= max_price
-        and (credit["Verified"] if verified_only else True)
-    ]
-
-    if available_credits:
         df_available = pd.DataFrame(available_credits)
+        df_available = df_available.drop("_id", axis=1)
         st.dataframe(df_available)
+    with col2:
+        for cred in available_credits:
+            is_selected = st.checkbox("", key=cred)
+            selected_contracts.append((cred, is_selected))
 
-        credit_index = st.number_input(
-            "Select Credit ID to Purchase",
-            min_value=0,
-            max_value=len(available_credits) - 1,
-            step=1,
-            format="%d",
+    if st.button("Purchase Selected Credit"):
+        selected_credit = selected_contracts[0][0]
+        print(selected_credit)
+        total_cost = (
+            int(selected_credit["REC_credits_traded"])
+            * selected_credit["price_of_contract"]
         )
 
-        if st.button("Purchase Selected Credit"):
-            selected_credit = available_credits[int(credit_index)]
-            total_cost = selected_credit["Amount"] * selected_credit["Price"]
+        index = next(
+            i for i, credit in enumerate(contracts) if credit == selected_credit
+        )
 
-            if total_cost > st.session_state["balance"]:
-                st.error("Insufficient balance to complete the purchase.")
-            else:
-                # Deduct Balance and Update Credit Ownership
-                index = next(
-                    i
-                    for i, credit in enumerate(st.session_state["credits"])
-                    if credit == selected_credit
-                )
-                selected_credit["Purchased By"] = st.session_state.get("username", "")
-                st.session_state["purchased_credits"].append(selected_credit)
-                del available_credits[int(credit_index)]
-                df_available.drop(index=index, inplace=True)
-                # Update balance after purchase
-                st.session_state["balance"] -= total_cost
-                print(
-                    st.session_state["credits"]
-                )  # Debugging: Verify update in credits list
-                print(
-                    st.session_state["purchased_credits"]
-                )  # Debugging: Verify purchased credits list
-                print(st.session_state["balance"])  # Debugging: Verify balance update
-                st.success(
-                    f"Purchased {selected_credit['Amount']} metric tonnes of CO₂ credits for ${total_cost:.2f}"
-                )
-                # Refresh the page to show updated data
-                st.rerun()
-    else:
-        st.info("No available credits match your filters.")
+        company = list(company_collection.find({"name": st.session_state["username"]}))[
+            0
+        ]
 
-
-# Main Function to Handle Role-Based Navigation
-def main():
-    business_dashboard()
-    browse_and_purchase()
-
-
-if __name__ == "__main__":
-    main()
+        rec_collection.update_one(
+            {"_id": selected_credit["_id"]},
+            {
+                "$set": {
+                    "traded_to": st.session_state.get("username", "") + "@gmail.com",
+                    "is_offer_in_market": False,
+                }
+            },
+        )
+        company_collection.update_one(
+            {"name": st.session_state["username"]},
+            {
+                "$set": {
+                    "money": company["money"] - total_cost,
+                    "carbon_balance": company["carbon_balance"]
+                    + selected_credit["REC_credits_traded"],
+                }
+            },
+        )
+        st.rerun()
+else:
+    st.info("No available credits match your filters.")

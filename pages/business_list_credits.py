@@ -6,11 +6,6 @@ from PIL import Image
 import json
 import time
 
-from APIKeys import OPEN_AI_API_KEY
-from flask import Flask, jsonify, request
-from pymongo import MongoClient
-from pymongo.errors import PyMongoError
-
 from APIKeys import OPEN_AI_API_KEY, MONGO_URI
 from navigation import make_sidebar
 from datetime import datetime
@@ -119,23 +114,25 @@ with st.form("list_credits_form"):
         unsafe_allow_html=True,
     )
     price = st.number_input("Price per Credit ($)", min_value=0, step=1)
-    st.text(
-        st.session_state["parsed_rec"]["co2"]
-        + " x "
-        + price
-        + " = "
-        + str(int(st.session_state["parsed_rec"]["co2"]) * price)
-    )
+    if int(st.session_state["parsed_rec"]["co2"]) > 0:
+        st.text(
+            str(st.session_state["parsed_rec"]["co2"])
+            + " x "
+            + str(price)
+            + " = $"
+            + str(int(st.session_state["parsed_rec"]["co2"]) * price)
+        )
     submit = st.form_submit_button("List Credits")
 
     if submit:
         parsed_rec = st.session_state["parsed_rec"]
         contract = {
             "datetime": datetime.now().strftime("%Y-%m-%d"),
-            "user": st.session_state["username"],
+            "traded_to": "",
             "REC_credits_traded": int(parsed_rec["co2"]),
-            "price": price,
-            "active": True,
+            "is_offer_in_market": True,
+            "price_of_contract": price,
+            "traded_from": st.session_state["username"] + "@gmail.com",
         }
         print(contract)
         rec_collection.insert_one(contract)

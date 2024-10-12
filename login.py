@@ -39,12 +39,16 @@ st.markdown(
 
 # Function to handle login
 def login(username, password):
-    if username in users and users[username]["password"] == password:
-        st.session_state["is_logged_in"] = True
-        st.session_state["username"] = username
-        st.session_state["role"] = users[username]["role"]
-        return True
-    return False
+    st.session_state["is_logged_in"] = True
+    st.session_state["username"] = username
+    if username == 'eshan':
+        st.session_state['role'] = 'consumer'
+    else:
+        st.session_state['role'] = 'business'
+    # st.session_state["role"] = users[username]["role"]
+    return True
+    # if username in users and users[username]["password"] == password:
+    # return False
 
 
 make_sidebar()
