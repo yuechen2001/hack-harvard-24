@@ -51,7 +51,7 @@ def make_sidebar():
         if st.session_state.get("is_logged_in", False):
             if st.session_state["role"] == "business":
                 st.page_link(
-                    "pages/business_sell.py", label="Sell your Credits", icon="🔒"
+                    "pages/business_dash.py", label="Dashboard", icon="🏠"
                 )
                 st.page_link(
                     "pages/business_market.py", label="MarketPlace", icon="🛒"

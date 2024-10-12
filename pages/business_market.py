@@ -12,8 +12,8 @@ if "purchased_credits" not in st.session_state:
 if "balance" not in st.session_state and st.session_state.get("role") == "business":
     st.session_state["balance"] = 100000  # Initial balance for businesses
 
-
 make_sidebar()
+
 
 # Function to display the business dashboard
 def business_dashboard():
@@ -65,9 +65,9 @@ def browse_and_purchase():
         credit
         for credit in st.session_state["credits"]
         if credit["Purchased By"] is None
-        and credit["Amount"] >= min_amount
-        and credit["Price"] <= max_price
-        and (credit["Verified"] if verified_only else True)
+           and credit["Amount"] >= min_amount
+           and credit["Price"] <= max_price
+           and (credit["Verified"] if verified_only else True)
     ]
 
     if available_credits:
@@ -119,18 +119,8 @@ def browse_and_purchase():
 
 # Main Function to Handle Role-Based Navigation
 def main():
-
-    if not st.session_state.get("is_logged_in", False):
-        st.error("Please log in to access the marketplace.")
-        return
-
-    role = st.session_state.get("role", "business")
-
-    if role == "business":
-        business_dashboard()
-        browse_and_purchase()
-    else:
-        st.error("Invalid user role.")
+    business_dashboard()
+    browse_and_purchase()
 
 
 if __name__ == "__main__":

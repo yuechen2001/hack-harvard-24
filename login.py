@@ -1,3 +1,4 @@
+from time import sleep
 import pymongo
 import streamlit as st
 from APIKeys import MONGO_URI
@@ -14,6 +15,26 @@ users = {
     "business": {"password": "business123", "role": "business"},
     "consumer": {"password": "consumer123", "role": "consumer"},
 }
+
+# Custom CSS for borders and search bar/button styles
+st.markdown(
+    """
+    <style>
+        .stToast {  
+        background-color: #4CAF50; 
+        color: white;
+        padding: 20px;
+        border-radius: 5px;
+        font-size: 64px;
+        text-align: center;
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # Function to handle login
@@ -41,7 +62,8 @@ st.session_state.dbClient = init_connection()
 if st.button("Log in", type="primary"):
     if not st.session_state["is_logged_in"]:
         if login(username, password):
-            st.success(f"Welcome, {username}")
+            st.toast(f"Welcome, {username}")
+            sleep(1)
             if st.session_state["role"] == "business":
                 st.switch_page("pages/business_sell.py")
             else:
