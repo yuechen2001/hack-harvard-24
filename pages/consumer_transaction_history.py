@@ -29,21 +29,45 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+# Pull data from the collection.
+# Uses st.cache_data to only rerun when the query changes or after 10 min.
+@st.cache_data(ttl=600)
+def get_data():
+    db = st.session_state.dbClient["hackharvard"]
+    items = db.consumer_rec.find({"user": "consumer@gmail.com"})
+    items = list(items)  # make hashable for st.cache_data
+    return items
+
+
 make_sidebar()
 
-st.title("Contract Management Dashboard")
+st.title("Transaction History")
 
 # Completed orders data
-data = {
-    "Date Completed": ["October 9, 2024", "October 8, 2024", "October 7, 2024"],
-    "Traded to": ["Apple", "Amazon", "Walmart"],
-    "Company Credits Earned": ["$200", "$500", "$345"],
-    "RECs Traded": [150, 200, 100],
-    "Company Credits Earned": ["$200", "$500", "$345"],
-}
+data = get_data()
 
-# Create a DataFrame
-df = pd.DataFrame(data, columns=data.keys(), index=[1, 2, 3])
+# Remove '_id' field from each document
+for document in data:
+    document.pop("_id", None)
+    document.pop("user", None)
+
+# Convert the data to a Pandas DataFrame
+df = pd.DataFrame(
+    data,
+)
+
+df.rename(
+    columns={
+        "datetime": "Date",
+        "traded_to": "Company Traded To",
+        "company_credits_earned": "Company Credits Earned",
+        "REC_credits_traded": "REC Credits Traded In",
+    },
+    inplace=True,
+)
+
+df.index = df.index + 1
 
 # Display the DataFrame as a table
 st.header("Completed Orders")
