@@ -4,12 +4,31 @@ from openai import OpenAI
 import streamlit as st
 import pytesseract
 from PIL import Image
+<<<<<<< HEAD
 import json
+=======
+from flask import Flask, jsonify, request
+from pymongo import MongoClient
+>>>>>>> 33de877 (working on mongo db)
 
 from APIKeys import OPEN_AI_API_KEY
 from navigation import make_sidebar
+<<<<<<< HEAD
+=======
+from pages.consumer_sell import parse_rec
+from datetime import datetime
+>>>>>>> 33de877 (working on mongo db)
 
 make_sidebar()
+
+app = Flask(__name__)
+
+mongo_uri = "mongodb+srv://<username>:<password>@cluster0.mongodb.net/test?retryWrites=true&w=majority"
+client = MongoClient(mongo_uri)
+
+db = client["mydatabase"]
+rec_collection = db["rec"]
+company_collection = db["company"]
 
 # Title of the app
 st.title("Upload Clean Energy Contract")
@@ -253,8 +272,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-if st.markdown(
-    '<button class="full-width-button">Submit</button>', unsafe_allow_html=True
-):
+if st.markdown('<button class="full-width-button">Submit</button>', unsafe_allow_html=True):
     # Code to run when the button is pressed
+<<<<<<< HEAD
     st.write("TO DO: upload with blockchain")
+=======
+    contract = {"date": datetime.now(), "num_rec": parsed_rec['co2'],
+                "user": parsed_rec['user'], "company": selected_companies[0]}
+    collection.insert_one(contract)
+    st.write("upload with blockchain")
+>>>>>>> 33de877 (working on mongo db)
