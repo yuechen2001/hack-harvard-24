@@ -11,8 +11,6 @@ from APIKeys import OPEN_AI_API_KEY, MONGO_URI
 from navigation import make_sidebar
 from datetime import datetime
 
-from pages.consumer_transaction_history import get_data
-
 make_sidebar()
 
 db = st.session_state.dbClient["hackharvard"]
