@@ -6,11 +6,6 @@ from PIL import Image
 import json
 import time
 
-from APIKeys import OPEN_AI_API_KEY
-from flask import Flask, jsonify, request
-from pymongo import MongoClient
-from pymongo.errors import PyMongoError
-
 from APIKeys import OPEN_AI_API_KEY, MONGO_URI
 from navigation import make_sidebar
 from datetime import datetime
