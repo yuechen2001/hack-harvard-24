@@ -88,29 +88,19 @@ with col2:
 col1, col2 = st.columns([2, 1], gap="medium")
 with col1:
     st.write("### Price of Amazon Credits Over Time")
-<<<<<<< HEAD
-
-<<<<<<< HEAD
 
 # Create a fake dataset
 dates = pd.date_range(start="2024-01-01", periods=100, freq="D")
 price_changes = (
     np.random.randn(100).cumsum() + credit_price
 )  # Random walk around the credit price
-=======
-=======
 
->>>>>>> 33de877404648a60914b39eaaa187c56900755cf
     # Create a fake dataset
     dates = pd.date_range(start="2024-01-01", periods=10, freq="D")
     price_changes = (50, 75, 80, 90, 85, 90, 100, 95, 85, st.session_state['market_price'])
     # price_changes = (
     #         np.random.randn(100).cumsum() + st.session_state['market_price']
     # )  # Random walk around the credit price
-<<<<<<< HEAD
->>>>>>> 33de877 (working on mongo db)
-=======
->>>>>>> 33de877404648a60914b39eaaa187c56900755cf
 
     # Create a dataframe
     df = pd.DataFrame({"Date": dates, "Amazon Credit Price": price_changes})
