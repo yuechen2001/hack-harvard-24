@@ -14,6 +14,38 @@ if "balance" not in st.session_state and st.session_state.get("role") == "busine
 
 make_sidebar()
 
+st.markdown(
+    """
+    <style>
+    .select-companies-label {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .logo-container {
+        background-color: white;
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .grey-box {
+        background-color: #333333;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    .stToast {  
+    background-color: #4CAF50; 
+    color: white;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 64px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 # Function to display the business dashboard
 def business_dashboard():
@@ -65,9 +97,9 @@ def browse_and_purchase():
         credit
         for credit in st.session_state["credits"]
         if credit["Purchased By"] is None
-           and credit["Amount"] >= min_amount
-           and credit["Price"] <= max_price
-           and (credit["Verified"] if verified_only else True)
+        and credit["Amount"] >= min_amount
+        and credit["Price"] <= max_price
+        and (credit["Verified"] if verified_only else True)
     ]
 
     if available_credits:

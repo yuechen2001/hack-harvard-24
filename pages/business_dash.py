@@ -5,6 +5,24 @@ from navigation import make_sidebar
 
 make_sidebar()
 
+
+def get_transaction_data():
+    db = st.session_state.dbClient["hackharvard"]
+    items = (
+        db.business_rec.find({"traded_from": st.session_state.username + "@gmail.com"})
+        .sort([("timestamp", -1)])
+        .limit(10)
+    )
+    items = list(items)
+    return items
+
+
+def get_business_data():
+    db = st.session_state.dbClient["hackharvard"]
+    items = db.company.find({"name": st.session_state.username})
+    return items[0]
+
+
 st.markdown(
     """
     <style>
@@ -27,6 +45,10 @@ st.markdown(
         .stButton button:hover {
             background-color: #218838;
         }
+        .smaller-words {
+            font-size: 24px;
+            font-weight: normal;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -35,9 +57,10 @@ st.markdown(
 if "market_price" not in st.session_state:
     st.session_state["market_price"] = 100  # Find actual market price with block chain
 
-# Company information (logo and hardcoded price)
-company_name = "Amazon"
-company_logo_url = "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"  # Replace with your actual logo URL
+business = get_business_data()
+company_name = business["name"]
+company_logo_url = business["image_url"]  # Replace with your actual logo URL
+
 
 # Custom CSS to add a white background to the logo container and grey box for text
 st.markdown(
@@ -47,6 +70,11 @@ st.markdown(
         background-color: white;
         padding: 10px;
         border-radius: 10px;
+    }
+    .logo-image {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
     .grey-box {
         background-color: #333333;
@@ -66,7 +94,7 @@ with col1:
     st.markdown(
         f"""
         <div class="logo-container">
-            <img src="{company_logo_url}" alt="{company_name} Logo" width="400">
+            <img class = "logo-image" src="{company_logo_url}" alt="{company_name} Logo" width="400">
         </div>
         """,
         unsafe_allow_html=True,
@@ -77,51 +105,43 @@ with col2:
     st.markdown(
         f"""
         <div class="grey-box">
-            <h2>Company name: {company_name}</h2>
-            <h3>No. of {company_name} credits per Energy credit: <b>${st.session_state['market_price']}</b></h3>
+            <h2>Company Name: {company_name}</h2>
+            <h2 class="smaller-words">Current Carbon Balance: {business['carbon_balance']} </h2>
+            <h2 class="smaller-words">Current Wallet Value: {business['money']} </h2>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+# Completed orders data
+data = get_transaction_data()
+
+# Remove '_id' field from each document
+for document in data:
+    document.pop("_id", None)
+    document.pop("traded_from", None)
+    document.pop("timestamp", None)
+
+# Convert to DataFrame (removing the _id field)
+df = pd.DataFrame(data)
+# Rename columns to more readable names
+df.rename(
+    columns={
+        "datetime": "Date & Time",
+        "traded_to": "Company Traded To",
+        "REC_credits_traded": "REC Credits Traded",
+        "is_offer_in_market": "Is Offer in Market",
+        "price_of_contract": "Price of Contract",
+    },
+    inplace=True,
+)
+
+df.index = df.index + 1
+
+# Display the DataFrame as a table
+st.header("Completed Orders")
+st.table(df)
+
+
 # Generate a fake price vs. time chart for Amazon credits
 col1, col2 = st.columns([2, 1], gap="medium")
-with col1:
-    st.write("### Price of Amazon Credits Over Time")
-
-    # Create a fake dataset
-    dates = pd.date_range(start="2024-01-01", periods=10, freq="D")
-    price_changes = (
-        50,
-        75,
-        80,
-        90,
-        85,
-        90,
-        100,
-        95,
-        85,
-        st.session_state["market_price"],
-    )
-
-    price_changes = (
-        np.random.randn(10).cumsum() + st.session_state["market_price"]
-    )  # Random walk around the credit price
-
-    # Create a dataframe
-    df = pd.DataFrame({"Date": dates, "Amazon Credit Price": price_changes})
-
-    # Plot the line chart
-    st.line_chart(df.set_index("Date"))
-
-with col2:
-    st.write("### Market Price / REC")
-
-    ticker_value = st.number_input(
-        "Enter Price ($)",
-        min_value=0,  # Minimum value allowed
-        value=st.session_state["market_price"],  # Default value
-        step=5,  # Step size for increments/decrements
-    )
-
-    st.session_state["market_price"] = ticker_value

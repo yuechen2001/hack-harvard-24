@@ -38,8 +38,7 @@ def get_data():
         .sort([("timestamp", -1)])
         .limit(10)
     )
-    items = list(items)  # make hashable for st.cache_data
-    print(len(items))
+    items = list(items)
     return items
 
 

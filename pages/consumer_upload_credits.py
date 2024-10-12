@@ -189,7 +189,7 @@ else:
 
         company_logos = {}
         company_prices = {}
-        company_data = list(company_collection.find({}, {}))
+        company_data = list(company_collection.find())
 
         for c in company_data:
             if c["carbon_balance"] < 0:
@@ -300,5 +300,5 @@ else:
             rec_collection.insert_one(contract)
 
         st.toast("Contract uploaded successfully!", icon="🚀")
-        time.sleep(2)
+        time.sleep(1)
         st.switch_page("pages/consumer_transaction_history.py")

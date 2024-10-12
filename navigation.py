@@ -20,6 +20,7 @@ def make_sidebar():
                 color: white;
                 border-radius: 8px;
                 padding: 10px;
+                width: 100%;
             }
 
             /* Hover effect for buttons */
@@ -50,17 +51,17 @@ def make_sidebar():
 
         if st.session_state.get("is_logged_in", False):
             if st.session_state["role"] == "business":
+                st.page_link("pages/business_dash.py", label="Dashboard", icon="🏠")
+                st.page_link("pages/business_market.py", label="MarketPlace", icon="🛒")
                 st.page_link(
-                    "pages/business_dash.py", label="Dashboard", icon="🏠"
+                    "pages/business_list_credits.py",
+                    label="List Energy Credits",
+                    icon="⚡",
                 )
                 st.page_link(
-                    "pages/business_market.py", label="MarketPlace", icon="🛒"
-                )
-                st.page_link(
-                    "pages/business_list_credits.py", label="List Energy Credits", icon="⚡"
-                )
-                st.page_link(
-                    "pages/business_consumer_price.py", label="Consumer Market Pricing", icon="👤"
+                    "pages/business_consumer_price.py",
+                    label="Consumer Market Pricing",
+                    icon="👤",
                 )
             else:
                 st.page_link(
