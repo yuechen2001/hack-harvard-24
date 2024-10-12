@@ -35,7 +35,11 @@ st.markdown(
 @st.cache_data(ttl=600)
 def get_data():
     db = st.session_state.dbClient["hackharvard"]
-    items = db.consumer_rec.find({"user": "consumer@gmail.com"})
+    items = (
+        db.consumer_rec.find({"user": "consumer@gmail.com"})
+        .sort([("timestamp", -1)])
+        .limit(10)
+    )
     items = list(items)  # make hashable for st.cache_data
     return items
 
@@ -51,6 +55,7 @@ data = get_data()
 for document in data:
     document.pop("_id", None)
     document.pop("user", None)
+    document.pop("timestamp", None)
 
 # Convert the data to a Pandas DataFrame
 df = pd.DataFrame(

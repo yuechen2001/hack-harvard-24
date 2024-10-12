@@ -32,8 +32,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-if 'market_price' not in st.session_state:
-    st.session_state['market_price'] = 100 # Find actual market price with block chain
+if "market_price" not in st.session_state:
+    st.session_state["market_price"] = 100  # Find actual market price with block chain
 
 # Company information (logo and hardcoded price)
 company_name = "Amazon"
@@ -89,32 +89,39 @@ col1, col2 = st.columns([2, 1], gap="medium")
 with col1:
     st.write("### Price of Amazon Credits Over Time")
 
-# Create a fake dataset
-dates = pd.date_range(start="2024-01-01", periods=100, freq="D")
-price_changes = (
-    np.random.randn(100).cumsum() + credit_price
-)  # Random walk around the credit price
-
     # Create a fake dataset
     dates = pd.date_range(start="2024-01-01", periods=10, freq="D")
-    price_changes = (50, 75, 80, 90, 85, 90, 100, 95, 85, st.session_state['market_price'])
-    # price_changes = (
-    #         np.random.randn(100).cumsum() + st.session_state['market_price']
-    # )  # Random walk around the credit price
+    price_changes = (
+        50,
+        75,
+        80,
+        90,
+        85,
+        90,
+        100,
+        95,
+        85,
+        st.session_state["market_price"],
+    )
+
+    price_changes = (
+        np.random.randn(100).cumsum() + st.session_state["market_price"]
+    )  # Random walk around the credit price
 
     # Create a dataframe
     df = pd.DataFrame({"Date": dates, "Amazon Credit Price": price_changes})
 
     # Plot the line chart
     st.line_chart(df.set_index("Date"))
+
 with col2:
     st.write("### Market Price / REC")
 
     ticker_value = st.number_input(
         "Enter Price ($)",
         min_value=0,  # Minimum value allowed
-        value=st.session_state['market_price'],  # Default value
+        value=st.session_state["market_price"],  # Default value
         step=5,  # Step size for increments/decrements
     )
 
-    st.session_state['market_price'] = ticker_value
+    st.session_state["market_price"] = ticker_value

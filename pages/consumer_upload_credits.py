@@ -5,9 +5,7 @@ import streamlit as st
 import pytesseract
 from PIL import Image
 import json
-from flask import Flask, jsonify, request
-from pymongo import MongoClient
-from pymongo.errors import PyMongoError
+import pyautogui
 
 from APIKeys import OPEN_AI_API_KEY, MONGO_URI
 from navigation import make_sidebar
@@ -64,6 +62,17 @@ st.markdown(
         .full-width-search {
             width: 100%;
         }
+        .stToast {  
+        background-color: #4CAF50; 
+        color: white;
+        padding: 20px;
+        border-radius: 5px;
+        font-size: 64px;
+        text-align: center;
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -92,9 +101,11 @@ def parse_rec(rec):
         return f"Error: {e}"
 
 
-if st.session_state['submitted']:
-    st.text('Congratulations! Your clean energy contract has been uploaded and fulfilled.')
-    st.session_state['submitted'] = False
+if st.session_state["submitted"]:
+    st.text(
+        "Congratulations! Your clean energy contract has been uploaded and fulfilled."
+    )
+    st.session_state["submitted"] = False
 else:
     col1, col2 = st.columns([1, 1], gap="medium")
 
@@ -124,7 +135,9 @@ else:
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
             st.image(
-                image, caption="Renewable Energy Certificate (REC)", use_column_width=True
+                image,
+                caption="Renewable Energy Certificate (REC)",
+                use_column_width=True,
             )
 
             if not st.session_state["file_processed"]:
@@ -178,15 +191,19 @@ else:
         company_logos = {}
         company_prices = {}
         company_data = list(company_collection.find({}, {}))
-        print(company_data)
+
         for c in company_data:
-            if c['carbon_balance'] < 0:
-                company_logos[c['name']] = c['image_url']
-                company_prices[c['name']] = c['price_per_REC_credit']
+            if c["carbon_balance"] < 0:
+                company_logos[c["name"]] = c["image_url"]
+                company_prices[c["name"]] = c["price_per_REC_credit"]
 
         sorted_companies = sorted(company_prices, key=company_prices.get, reverse=True)
-        company_logos = {company: company_logos[company] for company in sorted_companies}
-        company_prices = {company: company_prices[company] for company in sorted_companies}
+        company_logos = {
+            company: company_logos[company] for company in sorted_companies
+        }
+        company_prices = {
+            company: company_prices[company] for company in sorted_companies
+        }
 
         # company_logos = {
         #     "Amazon": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
@@ -226,9 +243,9 @@ else:
                 f'<div class="company-titles">Company</div>', unsafe_allow_html=True
             )
         with col_price:
-            st.markdown(f'<div class="company-titles">Price</div>', unsafe_allow_html=True)
-
-        print(filtered_companies)
+            st.markdown(
+                f'<div class="company-titles">Price</div>', unsafe_allow_html=True
+            )
 
         for company, logo_url in filtered_companies.items():
             col_image, col_name, col_price, col_checkbox = st.columns([1, 2, 1, 1])
@@ -243,7 +260,8 @@ else:
                 )
             with col_price:
                 st.markdown(
-                    f'<div class="company-name">${company_prices[company]}</div>', unsafe_allow_html=True
+                    f'<div class="company-name">${company_prices[company]}</div>',
+                    unsafe_allow_html=True,
                 )
 
         selected_companies = [
@@ -256,7 +274,8 @@ else:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("""
+    st.markdown(
+        """
         <style>
         .full-width-button {
             display: block;
@@ -273,15 +292,25 @@ else:
             background-color: #45a049;
         }
         </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
-    if st.button('Submit'):
+    if st.button("Submit"):
         # Code to run when the button is pressed
-        parsed_rec = st.session_state['parsed_rec']
-        contract = {"datetime": datetime.now().strftime('%Y-%m-%d'), "traded_to": selected_companies[0],
-                    "company_credits_earned": int(company_prices[selected_companies[0]]), "user": 'consumer@gmail.com',
-                    "REC_credits_traded": int(parsed_rec['co2'])}
-        print(contract)
+        parsed_rec = st.session_state["parsed_rec"]
+        contract = {
+            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": time.time(),
+            "traded_to": selected_companies[0],
+            "company_credits_earned": int(company_prices[selected_companies[0]]),
+            "user": "consumer@gmail.com",
+            "REC_credits_traded": int(parsed_rec["co2"]),
+            # "certificate_binary": uploaded_file.read(),
+        }
+
         rec_collection.insert_one(contract)
 
-        st.toast('Congratulations! Your clean energy contract has been uploaded and fulfilled.')
+        st.toast("Contract uploaded successfully!", icon="🚀")
+        time.sleep(2)
+        st.switch_page("pages/consumer_transaction_history.py")
