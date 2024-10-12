@@ -49,7 +49,7 @@ def parse_rec(rec):
         return f"Error: {e}"
 
 
-st.header("List Your Clean Energy Contract")
+st.header("List Your Clean Energy Contract (CEC)")
 
 st.markdown('<div class="stColumn">', unsafe_allow_html=True)
 
@@ -107,15 +107,16 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 with st.form("list_credits_form"):
     st.markdown(
-        '<div class="select-companies-label">Upload CEC:</div>',
+        '<div class="select-companies-label">Set CEC Price:</div>',
         unsafe_allow_html=True,
     )
     price = st.number_input("Price per Credit ($)", min_value=0.0, step=0.1)
+    st.text(st.session_state['parsed_rec']['co2'] + ' x ' + price + ' = ' + str(int(st.session_state['parsed_rec']['co2']) * price))
     submit = st.form_submit_button("List Credits")
 
     if submit:
         parsed_rec = st.session_state['parsed_rec']
         contract = {"datetime": datetime.now().strftime('%Y-%m-%d'), "user": st.session_state['username'],
-                    "REC_credits_traded": int(parsed_rec['co2']), "price": price}
+                    "REC_credits_traded": int(parsed_rec['co2']), "price": price, "active": True}
         print(contract)
         rec_collection.insert_one(contract)
