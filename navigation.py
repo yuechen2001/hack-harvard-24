@@ -15,11 +15,11 @@ def make_sidebar():
                 )
             else:
                 st.page_link(
-                    "pages/consumer_sell.py", label="Sell your Credits", icon="🕵️"
+                    "pages/consumer_sell.py", label="Contract Management Dashboard", icon="🕵️"
                 )
                 st.page_link(
                     "pages/consumer_upload_credits.py",
-                    label="Upload your Credits",
+                    label="Upload Clean Energy Contract",
                     icon="📤",
                 )
 
