@@ -3,11 +3,23 @@ import time
 import streamlit as st
 import pytesseract
 from PIL import Image
+from flask import Flask, jsonify, request
+from pymongo import MongoClient
 
 from navigation import make_sidebar
 from pages.consumer_sell import parse_rec
+from datetime import datetime
 
 make_sidebar()
+
+app = Flask(__name__)
+
+mongo_uri = "mongodb+srv://<username>:<password>@cluster0.mongodb.net/test?retryWrites=true&w=majority"
+client = MongoClient(mongo_uri)
+
+db = client["mydatabase"]
+rec_collection = db["rec"]
+company_collection = db["company"]
 
 # Title of the app
 st.title("Upload Clean Energy Contract")
@@ -226,8 +238,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-if st.markdown(
-    '<button class="full-width-button">Submit</button>', unsafe_allow_html=True
-):
+if st.markdown('<button class="full-width-button">Submit</button>', unsafe_allow_html=True):
     # Code to run when the button is pressed
+    contract = {"date": datetime.now(), "num_rec": parsed_rec['co2'],
+                "user": parsed_rec['user'], "company": selected_companies[0]}
+    collection.insert_one(contract)
     st.write("upload with blockchain")
