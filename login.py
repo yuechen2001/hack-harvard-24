@@ -65,7 +65,7 @@ if st.button("Log in", type="primary"):
             st.toast(f"Welcome, {username}")
             sleep(1)
             if st.session_state["role"] == "business":
-                st.switch_page("pages/business_sell.py")
+                st.switch_page("pages/business_dash.py")
             else:
                 st.switch_page("pages/consumer_upload_credits.py")
         else:
