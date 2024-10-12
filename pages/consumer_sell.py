@@ -67,43 +67,43 @@ if "parsed_rec" not in st.session_state:
 st.title("Contract Management Dashboard")
 
 # Create two columns: Active Contracts and Completed Orders
-col1, col2 = st.columns(2)
+# col2 = st.columns(1)
 
 # Left column: Active Contracts
-with col1:
-    st.header("Active Contracts")
-
-    # Example of an active contract
-    st.subheader("Date: October 10, 2024")
-    st.text("Tons of CO2: 100")
-    st.text("Companies: Amazon, Walmart, Apple")
-
-    # Add more contracts as needed
-    st.subheader("Date: October 11, 2024")
-    st.text("Tons of CO2: 250")
-    st.text("Companies: Netflix, Airbnb")
-
-    st.subheader("Date: October 12, 2024")
-    st.text("Tons of CO2: 300")
-    st.text("Companies: Nike, Samsung")
+# with col1:
+#     st.header("Active Contracts")
+#
+#     # Example of an active contract
+#     st.subheader("Date: October 10, 2024")
+#     st.text("Tons of CO2: 100")
+#     st.text("Companies: Amazon, Walmart, Apple")
+#
+#     # Add more contracts as needed
+#     st.subheader("Date: October 11, 2024")
+#     st.text("Tons of CO2: 250")
+#     st.text("Companies: Netflix, Airbnb")
+#
+#     st.subheader("Date: October 12, 2024")
+#     st.text("Tons of CO2: 300")
+#     st.text("Companies: Nike, Samsung")
 
 # Right column: Completed Orders
-with col2:
-    st.header("Completed Orders")
+# with col2:
+st.header("Completed Orders")
 
-    # Example of a completed order
-    st.subheader("Date Completed: October 9, 2024")
-    st.text("Tons of CO2: 150")
-    st.text("Money Earned: $10,000")
-    st.text("Fulfilled by: Apple")
+# Example of a completed order
+st.subheader("Date Completed: October 9, 2024")
+st.text("Tons of CO2: 150")
+st.text("Money Earned: $10,000")
+st.text("Fulfilled by: Apple")
 
-    # Add more completed orders as needed
-    st.subheader("Date Completed: October 8, 2024")
-    st.text("Tons of CO2: 200")
-    st.text("Money Earned: $15,000")
-    st.text("Fulfilled by: Amazon")
+# Add more completed orders as needed
+st.subheader("Date Completed: October 8, 2024")
+st.text("Tons of CO2: 200")
+st.text("Money Earned: $15,000")
+st.text("Fulfilled by: Amazon")
 
-    st.subheader("Date Completed: October 7, 2024")
-    st.text("Tons of CO2: 100")
-    st.text("Money Earned: $5,000")
-    st.text("Fulfilled by: Walmart")
+st.subheader("Date Completed: October 7, 2024")
+st.text("Tons of CO2: 100")
+st.text("Money Earned: $5,000")
+st.text("Fulfilled by: Walmart")
