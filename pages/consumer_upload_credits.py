@@ -4,29 +4,18 @@ from openai import OpenAI
 import streamlit as st
 import pytesseract
 from PIL import Image
-<<<<<<< HEAD
 import json
-=======
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
->>>>>>> 33de877 (working on mongo db)
 
-from APIKeys import OPEN_AI_API_KEY
+from APIKeys import OPEN_AI_API_KEY, MONGO_URI
 from navigation import make_sidebar
-<<<<<<< HEAD
-=======
-from pages.consumer_sell import parse_rec
 from datetime import datetime
->>>>>>> 33de877 (working on mongo db)
 
 make_sidebar()
+client = MongoClient(MONGO_URI)
 
-app = Flask(__name__)
-
-mongo_uri = "mongodb+srv://<username>:<password>@cluster0.mongodb.net/test?retryWrites=true&w=majority"
-client = MongoClient(mongo_uri)
-
-db = client["mydatabase"]
+db = client["hackharvard"]
 rec_collection = db["rec"]
 company_collection = db["company"]
 
@@ -38,7 +27,7 @@ client = OpenAI(api_key=OPEN_AI_API_KEY)
 if "file_processed" not in st.session_state:
     st.session_state["file_processed"] = False
 if "parsed_rec" not in st.session_state:
-    st.session_state["parsed_rec"] = None
+    st.session_state["parsed_rec"] = {"co2": 0, "user": "test", "certifier": "test"}
 
 # Custom CSS for borders and search bar/button styles
 st.markdown(
@@ -181,16 +170,30 @@ with col2:
         unsafe_allow_html=True,
     )
 
-    company_logos = {
-        "Amazon": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-        "Walmart": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg",
-        "Apple": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-        "Netflix": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-        "Airbnb": "https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_Bélo.svg",
-        "Nike": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg",
-        "Adidas": "https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg",
-        "Samsung": "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
-    }
+    company_logos = {}
+    company_prices = {}
+    company_data = list(company_collection.find({}, {}))
+    print(company_data)
+    for c in company_data:
+        if c['carbon_balance'] < 0:
+            company_logos[c['name']] = c['image_url']
+            company_prices[c['name']] = c['price_per_REC_credit']
+
+    sorted_companies = sorted(company_prices, key=company_prices.get, reverse=True)
+    company_logos = {company: company_logos[company] for company in sorted_companies}
+    company_prices = {company: company_prices[company] for company in sorted_companies}
+
+
+    # company_logos = {
+    #     "Amazon": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+    #     "Walmart": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg",
+    #     "Apple": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
+    #     "Netflix": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+    #     "Airbnb": "https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_Bélo.svg",
+    #     "Nike": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg",
+    #     "Adidas": "https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg",
+    #     "Samsung": "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
+    # }
 
     st.markdown(
         """
@@ -236,7 +239,7 @@ with col2:
             )
         with col_price:
             st.markdown(
-                f'<div class="company-name">${100}</div>', unsafe_allow_html=True
+                f'<div class="company-name">${company_prices[company]}</div>', unsafe_allow_html=True
             )
 
     selected_companies = [
@@ -249,36 +252,30 @@ with col2:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown(
-    """
+st.markdown("""
     <style>
     .full-width-button {
         display: block;
         width: 100%;
+        height: 50px;
+        background-color: #4CAF50;
         color: white;
-        background-color: #28a745;
         border: none;
-        padding: 0.75em;
-        font-size: 1em;
-        text-align: center;
-        cursor: pointer;
         border-radius: 5px;
+        cursor: pointer;
+        font-size: 20px;
     }
     .full-width-button:hover {
-        background-color: #218838;
+        background-color: #45a049;
     }
     </style>
-    """,
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
-if st.markdown('<button class="full-width-button">Submit</button>', unsafe_allow_html=True):
+if st.button('Submit'):
     # Code to run when the button is pressed
-<<<<<<< HEAD
-    st.write("TO DO: upload with blockchain")
-=======
-    contract = {"date": datetime.now(), "num_rec": parsed_rec['co2'],
+    parsed_rec = st.session_state['parsed_rec']
+    contract = {"date": datetime.now().strftime('%Y-%m-%d'), "num_rec": parsed_rec['co2'],
                 "user": parsed_rec['user'], "company": selected_companies[0]}
-    collection.insert_one(contract)
+    print(contract)
+    rec_collection.insert_one(contract)
     st.write("upload with blockchain")
->>>>>>> 33de877 (working on mongo db)
