@@ -1,5 +1,6 @@
+import pymongo
 import streamlit as st
-import os
+from APIKeys import MONGO_URI
 from navigation import make_sidebar
 
 # Set page configuration
@@ -28,6 +29,13 @@ def login(username, password):
 make_sidebar()
 username = st.text_input("Username")
 password = st.text_input("Password", type="password")
+
+
+def init_connection():
+    return pymongo.MongoClient(MONGO_URI)
+
+
+st.session_state.dbClient = init_connection()
 
 # Check if the consumer is logged in, otherwise show login form
 if st.button("Log in", type="primary"):
