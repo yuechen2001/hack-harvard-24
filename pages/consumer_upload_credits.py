@@ -175,16 +175,9 @@ with col2:
             f'<div class="company-titles">Price</div>', unsafe_allow_html=True
         )
 
-    companies_per_page = 5
-    total_companies = len(filtered_companies)
-    page_count = (total_companies - 1) // companies_per_page + 1  # Total number of pages
+    print(filtered_companies)
 
-    # Get the current batch of companies to display
-    start_idx = st.session_state['company_page'] * companies_per_page
-    end_idx = min(start_idx + companies_per_page, total_companies)
-    current_companies = list(filtered_companies.items())[start_idx:end_idx]
-
-    for company, logo_url in current_companies:
+    for company, logo_url in filtered_companies.items():
         col_image, col_name, col_price, col_checkbox = st.columns([1, 2, 1, 1])
         with col_checkbox:
             is_selected = st.checkbox("", key=company)
@@ -200,29 +193,6 @@ with col2:
                 f'<div class="company-name">${100}</div>', unsafe_allow_html=True
             )
 
-    st.markdown("""
-        <style>
-        .custom-button {
-            # background-color: transparent; /* Green */
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            transition-duration: 0.4s;
-            text-color: white;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-    side, col1, col2, col3, side2 = st.columns([1, 1, 1, 1, 1])
-    with col1:
-        if st.markdown('<a href="#" class="custom-button">Prev</a>', unsafe_allow_html=True) and st.session_state['company_page'] > 0:
-            st.session_state['company_page'] -= 1
-    with col3:
-        if st.markdown('<a href="#" class="custom-button">Next</a>', unsafe_allow_html=True) and st.session_state['company_page'] < page_count - 1:
-            st.session_state['company_page'] += 1
-
-    st.write(st.session_state['company_page'])
     selected_companies = [
         company for company, selected in selected_companies if selected
     ]
