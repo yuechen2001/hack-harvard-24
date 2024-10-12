@@ -1,19 +1,25 @@
 import time
 
+from openai import OpenAI
 import streamlit as st
 import pytesseract
 from PIL import Image
+import json
 
+from APIKeys import OPEN_AI_API_KEY
 from navigation import make_sidebar
-from pages.consumer_sell import parse_rec
 
 make_sidebar()
 
 # Title of the app
 st.title("Upload Clean Energy Contract")
 
-if 'company_page' not in st.session_state:
-    st.session_state['company_page'] = 0
+
+client = OpenAI(api_key=OPEN_AI_API_KEY)
+if "file_processed" not in st.session_state:
+    st.session_state["file_processed"] = False
+if "parsed_rec" not in st.session_state:
+    st.session_state["parsed_rec"] = None
 
 # Custom CSS for borders and search bar/button styles
 st.markdown(
@@ -52,6 +58,29 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+def parse_rec(rec):
+    try:
+        prompt = (
+            "I am passing in the text from a Renewable Energy Certificate (REC). Parse the text and output in the JSON format below:\n"
+            '{"certifier": "the name of the company/organization that certified this REC", "user": "the name of the organization/user the REC was awarded to", "co2": "the number of metric tonnes of CO2 that was offset"}.\n'
+            "Here is the text from the REC:\\" + rec + "\n"
+        )
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=150,
+            n=1,
+            stop=None,
+            temperature=0.4,
+        )
+        if response.choices[0].message.content is not None:
+            return json.loads(response.choices[0].message.content)
+        return ""
+    except Exception as e:
+        return f"Error: {e}"
+
 
 # Create two columns for layout with borders
 col1, col2 = st.columns([1, 1], gap="medium")
@@ -171,9 +200,7 @@ with col2:
             f'<div class="company-titles">Company</div>', unsafe_allow_html=True
         )
     with col_price:
-        st.markdown(
-            f'<div class="company-titles">Price</div>', unsafe_allow_html=True
-        )
+        st.markdown(f'<div class="company-titles">Price</div>', unsafe_allow_html=True)
 
     print(filtered_companies)
 
@@ -230,4 +257,4 @@ if st.markdown(
     '<button class="full-width-button">Submit</button>', unsafe_allow_html=True
 ):
     # Code to run when the button is pressed
-    st.write("upload with blockchain")
+    st.write("TO DO: upload with blockchain")

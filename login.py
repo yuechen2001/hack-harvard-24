@@ -37,6 +37,6 @@ if st.button("Log in", type="primary"):
             if st.session_state["role"] == "business":
                 st.switch_page("pages/business_sell.py")
             else:
-                st.switch_page("pages/consumer_sell.py")
+                st.switch_page("pages/consumer_upload_credits.py")
         else:
             st.error("Invalid username or password")

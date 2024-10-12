@@ -55,7 +55,9 @@ def make_sidebar():
                 )
             else:
                 st.page_link(
-                    "pages/consumer_sell.py", label="Contract Management Dashboard", icon="🕵️"
+                    "pages/consumer_transaction_history.py",
+                    label="Contract Management Dashboard",
+                    icon="🕵️",
                 )
                 st.page_link(
                     "pages/consumer_upload_credits.py",

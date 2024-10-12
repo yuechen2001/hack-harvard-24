@@ -85,6 +85,7 @@ with col2:
 # Generate a fake price vs. time chart for Amazon credits
 st.write("### Price of Amazon Credits Over Time")
 
+
 # Create a fake dataset
 dates = pd.date_range(start="2024-01-01", periods=100, freq="D")
 price_changes = (
