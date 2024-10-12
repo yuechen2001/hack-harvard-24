@@ -105,7 +105,7 @@ with col1:
     )
 
     price_changes = (
-        np.random.randn(100).cumsum() + st.session_state["market_price"]
+        np.random.randn(10).cumsum() + st.session_state["market_price"]
     )  # Random walk around the credit price
 
     # Create a dataframe

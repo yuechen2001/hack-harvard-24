@@ -11,6 +11,8 @@ from APIKeys import OPEN_AI_API_KEY, MONGO_URI
 from navigation import make_sidebar
 from datetime import datetime
 
+from pages.consumer_transaction_history import get_data
+
 make_sidebar()
 
 db = st.session_state.dbClient["hackharvard"]
@@ -19,7 +21,6 @@ company_collection = db["company"]
 
 # Title of the app
 st.title("Upload Clean Energy Contract")
-
 
 client = OpenAI(api_key=OPEN_AI_API_KEY)
 if "file_processed" not in st.session_state:
@@ -205,17 +206,6 @@ else:
             company: company_prices[company] for company in sorted_companies
         }
 
-        # company_logos = {
-        #     "Amazon": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-        #     "Walmart": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg",
-        #     "Apple": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-        #     "Netflix": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-        #     "Airbnb": "https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_Bélo.svg",
-        #     "Nike": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg",
-        #     "Adidas": "https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg",
-        #     "Samsung": "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
-        # }
-
         st.markdown(
             """
             <style>
@@ -304,9 +294,8 @@ else:
             "timestamp": time.time(),
             "traded_to": selected_companies[0],
             "company_credits_earned": int(company_prices[selected_companies[0]]),
-            "user": "consumer@gmail.com",
+            "user": st.session_state.username + "@gmail.com",
             "REC_credits_traded": int(parsed_rec["co2"]),
-            # "certificate_binary": uploaded_file.read(),
         }
 
         rec_collection.insert_one(contract)
