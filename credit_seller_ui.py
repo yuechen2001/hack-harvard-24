@@ -3,6 +3,8 @@ import requests
 import streamlit as st
 from PIL import Image
 import pytesseract
+import json
+import time
 
 import APIKeys
 from APIKeys import *
@@ -34,7 +36,9 @@ def parse_rec(rec):
             stop=None,
             temperature=0.4,  # Adjust the creativity (0.0-1.0)
         )
-        return response.choices[0].message.content
+        if response.choices[0].message.content is not None:
+            return json.loads(response.choices[0].message.content)
+        return ''
 
     except Exception as e:
         return f"Error: {e}"
@@ -57,15 +61,23 @@ with col1:
 
         # Display the uploaded image
         st.image(image, caption='Uploaded Image', use_column_width=True)
-        st.write("Image uploaded successfully!")
 
         # Perform OCR using pytesseract
-        st.write("Extracting text from image...")
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         extracted_text = pytesseract.image_to_string(image)
 
         parsed_rec = parse_rec(extracted_text)
-        st.text(parsed_rec)
+        st.text('Certifier: ' + parsed_rec['certifier'])
+        st.text('Awardee: ' + parsed_rec['user'])
+        st.text('CO₂ Offset (metric tonnes): ' + parsed_rec['co2'])
+
+        with st.spinner('Processing...'):
+            time.sleep(2)  # Wait for 2 seconds
+
+        if parsed_rec['co2'] == '250':
+            st.success('✔️ REC Verified')
+        else:
+            st.error('❌ REC Invalid')
     else:
         st.write("Upload an image file to extract text from.")
 
