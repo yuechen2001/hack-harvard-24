@@ -7,6 +7,8 @@ import streamlit as st
 from openai import OpenAI
 from APIKeys import OPEN_AI_API_KEY
 from navigation import make_sidebar
+from hedera_utils import store_consumer_credit
+from hedera_utils import display_blockchain_notification
 
 # Initialize Sidebar and MongoDB Connection
 make_sidebar()
@@ -158,7 +160,6 @@ if (
                 parsed_rec = st.session_state["parsed_rec"]
                 contract = {
                     "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "timestamp": time.time(),
                     "traded_to": selected_companies[0],
                     "company_credits_earned": int(
                         company_prices[selected_companies[0]]
@@ -168,6 +169,12 @@ if (
                 }
                 household_rec_collection.insert_one(contract)
 
+                # Store on blockchain
+                store_consumer_credit(contract)  # Blockchain function
+
+                # Display toast notification
+                if store_consumer_credit(contract):
+                    display_blockchain_notification()
             st.session_state["submitted"] = True
             st.session_state["file_processed"] = False
             st.session_state["parsed_rec"] = {
