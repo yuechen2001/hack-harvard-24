@@ -28,4 +28,4 @@ COPY . /app
 EXPOSE 8501
 
 # Run Streamlit when the container launches
-ENTRYPOINT ["streamlit", "run", "login.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "login.py", "--server.port=8501", "--server.address=0.0.0.0"]

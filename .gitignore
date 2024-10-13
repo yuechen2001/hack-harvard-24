@@ -2,3 +2,4 @@ venv
 APIKeys.py
 node_modules
 .pyc
+.env
