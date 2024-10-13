@@ -102,7 +102,7 @@ with col:
                     "traded_to": "",
                     "REC_credits_traded": int(parsed_rec["co2"]),
                     "is_offer_in_market": True,
-                    "price_of_contract": price,
+                    "price_of_contract": int(parsed_rec["co2"]) * price,
                     "traded_from": st.session_state["username"],
                 }
                 rec_collection.insert_one(contract)

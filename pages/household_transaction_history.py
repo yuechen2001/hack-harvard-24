@@ -9,12 +9,13 @@ def get_data():
     items = (
         db.household_rec.find({"user": st.session_state.username + "@gmail.com"})
         .sort([("timestamp", -1)])
-        .limit(10)
+        .limit(50)
     )
     items = list(items)
-    print(items)
+    # print(items)
 
     for i in items:
+        print(i['traded_to'])
         i['company_credits_earned'] = "{:.2f}".format(i['company_credits_earned'] * i['REC_credits_traded'])
         i['REC_credits_traded'] = "{:.0f}".format(i['REC_credits_traded'])
 

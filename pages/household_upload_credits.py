@@ -40,7 +40,7 @@ def parse_rec(rec):
             max_tokens=150,
             n=1,
             stop=None,
-            temperature=0.4,
+            temperature=0.2,
         )
         if response.choices[0].message.content is not None:
             return json.loads(response.choices[0].message.content)
@@ -154,7 +154,7 @@ if st.session_state["file_processed"] and st.session_state['username'].lower() i
 _, submit_col, _ = st.columns([2, 1, 2])
 if (
     st.session_state["file_processed"]
-    and st.session_state["parsed_rec"]["co2"] == "250"
+    and st.session_state['username'].lower() in parsed_rec['user'].lower()
     and selected_companies
 ):
     with submit_col:
@@ -169,7 +169,7 @@ if (
                     "company_credits_earned": int(
                         company_prices[selected_companies[0]]
                     ),
-                    "user": st.session_state.username,
+                    "user": st.session_state.username + '@gmail.com',
                     "REC_credits_traded": int(parsed_rec["co2"]),
                 }
                 household_rec_collection.insert_one(contract)
