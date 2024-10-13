@@ -12,6 +12,12 @@ def get_data():
         .limit(10)
     )
     items = list(items)
+    print(items)
+
+    for i in items:
+        i['company_credits_earned'] = "{:.2f}".format(i['company_credits_earned'])
+        i['REC_credits_traded'] = "{:.0f}".format(i['REC_credits_traded'])
+
     return items
 
 
