@@ -1,7 +1,7 @@
 from datetime import datetime
 import streamlit as st
 from hedera_utils import store_company_data
-from hedera_utils import display_blockchain_notification
+from hedera_utils import display_blockchain_notification2
 from navigation import make_sidebar
 
 st.title("Set Credits to Spend per Household CEC credit")
@@ -54,7 +54,7 @@ with col:
                 )
                 # After successfully storing on the blockchain
                 if store_company_data(company_data):
-                    display_blockchain_notification()
+                    display_blockchain_notification2()
 
             else:
                 st.warning("No document found with the specified company.")

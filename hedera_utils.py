@@ -38,7 +38,17 @@ def display_blockchain_notification():
     time.sleep(1)
     msg.toast("Cooking...")
     time.sleep(2)
-    msg.toast("Your transaction has been sent to the blockchain!", icon="🥞")
+    msg.toast(
+        "Certificate successfully encrypted and stored on the blockchain!", icon="🥞"
+    )
+
+
+def display_blockchain_notification2():
+    msg = st.toast("Communicating with blockchain...")
+    time.sleep(1)
+    msg.toast("Cooking...")
+    time.sleep(2)
+    msg.toast("Certificate successfully decrypted and available for use!", icon="🥞")
 
 
 def store_consumer_credit(transaction):

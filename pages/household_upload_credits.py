@@ -178,6 +178,7 @@ if (
                 store_consumer_credit(contract)  # Blockchain function
                 
                 # Display toast notification
+                
                 if store_consumer_credit(contract):
                     display_blockchain_notification()
             st.session_state["submitted"] = True
