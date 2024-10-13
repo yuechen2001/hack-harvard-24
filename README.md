@@ -4,3 +4,4 @@
  - **Vitthal Agarwal**
  - **Eshan Singhal**
  - **Zhu Yuechen**
+**Devpost**: [TradeREC on Devpost](https://devpost.com/submit-to/22316-hackharvard-2024/manage/submissions/564180-traderec/additional-info/edit)
