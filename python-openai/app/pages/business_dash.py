@@ -22,13 +22,6 @@ def get_transaction_data():
         .sort([("timestamp", -1)])
         .limit(10)
     )
-
-    items = list(items)
-    print(items)
-    for i in items:
-        i['REC_credits_traded'] = "{:.0f}".format(i['REC_credits_traded'])
-        i['price_of_contract'] = "{:.2f}".format(i['price_of_contract'])
-
     return list(items)
 
 

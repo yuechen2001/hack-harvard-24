@@ -1,7 +1,6 @@
 import streamlit as st
 from time import sleep
 import pymongo
-
 from APIKeys import MONGO_URI
 
 # Set page configuration
@@ -74,7 +73,7 @@ def login(username):
 
 left_co, cent_co, last_co = st.columns(3)
 with cent_co:
-    st.image("finance.png", width=450)
+    st.image("finance.png", width=640)
 
 buff, login_col, buff2 = st.columns(3)
 with login_col:
