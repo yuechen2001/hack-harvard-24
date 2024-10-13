@@ -45,36 +45,40 @@ def make_sidebar():
     )
 
     with st.sidebar:
-        st.title("App Name Placeholder")
+        st.title("TradeREC")
+
         st.write("")
         st.write("")
 
         if st.session_state.get("is_logged_in", False):
             if st.session_state["role"] == "business":
-                st.page_link("pages/business_dash.py", label="Dashboard", icon="🏠")
-                st.page_link("pages/business_market.py", label="MarketPlace", icon="🛒")
+                st.page_link(
+                    "pages/business_dash.py", label="Company Dashboard", icon="🏠"
+                )
+                st.page_link("pages/business_market.py", label="Marketplace", icon="🛒")
                 st.page_link(
                     "pages/business_list_credits.py",
-                    label="List Energy Credits",
+                    label="Sell Clean Energy Contract (CEC)",
                     icon="⚡",
                 )
                 st.page_link(
-                    "pages/business_consumer_price.py",
-                    label="Consumer Market Pricing",
+                    "pages/business_household_price.py",
+                    label="Set Credits to Spend per Household CEC credit",
                     icon="👤",
                 )
             else:
                 st.page_link(
-                    "pages/consumer_transaction_history.py",
-                    label="Contract Management Dashboard",
-                    icon="🕵️",
-                )
-                st.page_link(
-                    "pages/consumer_upload_credits.py",
-                    label="Upload Clean Energy Contract",
+                    "pages/household_upload_credits.py",
+                    label="Sell Clean Energy Contract (CEC)",
                     icon="📤",
                 )
+                st.page_link(
+                    "pages/household_transaction_history.py",
+                    label="Transaction History",
+                    icon="🕵️",
+                )
 
+            st.write("")
             st.write("")
             st.write("")
 

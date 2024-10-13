@@ -2,39 +2,12 @@ import streamlit as st
 from navigation import make_sidebar
 import pandas as pd
 
-st.markdown(
-    """
-    <style>
-        .stColumn {
-            # border: 2px solid #f0f0f0;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        .stTextInput input, .stButton button {
-            width: 100%;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .stButton button {
-            background-color: #28a745;
-            color: white;
-        }
-        .stButton button:hover {
-            background-color: #218838;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 
 # Pull data from the collection.
 def get_data():
     db = st.session_state.dbClient["hackharvard"]
     items = (
-        db.consumer_rec.find({"user": st.session_state.username + "@gmail.com"})
+        db.household_rec.find({"user": st.session_state.username + "@gmail.com"})
         .sort([("timestamp", -1)])
         .limit(10)
     )
@@ -62,7 +35,7 @@ df = pd.DataFrame(
 
 df.rename(
     columns={
-        "datetime": "Date",
+        "datetime": "Date & Time",
         "traded_to": "Company Traded To",
         "company_credits_earned": "Company Credits Earned",
         "REC_credits_traded": "REC Credits Traded In",
@@ -73,5 +46,5 @@ df.rename(
 df.index = df.index + 1
 
 # Display the DataFrame as a table
-st.header("Completed Orders")
+st.write("### Completed Transactions:")
 st.table(df)

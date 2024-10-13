@@ -13,10 +13,8 @@ from datetime import datetime
 make_sidebar()
 
 client = OpenAI(api_key=OPEN_AI_API_KEY)
-if "file_processed" not in st.session_state:
-    st.session_state["file_processed"] = False
-if "parsed_rec" not in st.session_state:
-    st.session_state["parsed_rec"] = {"co2": 0, "user": "test", "certifier": "test"}
+st.session_state["file_processed"] = False
+st.session_state["parsed_rec"] = {"co2": 0, "user": "test", "certifier": "test"}
 
 db = st.session_state.dbClient["hackharvard"]
 rec_collection = db["business_rec"]
@@ -44,37 +42,10 @@ def parse_rec(rec):
         return f"Error: {e}"
 
 
-st.header("List Your Clean Energy Contract (CEC)")
-
-st.markdown('<div class="stColumn">', unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <style>
-    .select-companies-label {
-        font-size: 24px;
-        font-weight: bold;
-    }
-    .logo-container {
-        background-color: white;
-        padding: 10px;
-        border-radius: 10px;
-    }
-    .grey-box {
-        background-color: #333333;
-        padding: 15px;
-        border-radius: 10px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.title("List Your Clean Energy Contract (CEC)")
 
 # Display the label with the custom class
-st.markdown(
-    '<div class="select-companies-label">Upload your Renewable Energy Certificate (REC):</div>',
-    unsafe_allow_html=True,
-)
+st.write("### Upload your Renewable Energy Certificate (REC):")
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
@@ -101,38 +72,44 @@ if uploaded_file is not None:
 
     if parsed_rec["co2"] == "250":
         st.success("REC Verified")
+        st.session_state["file_processed"] = True
     else:
         st.error("REC Invalid")
-    st.session_state["file_processed"] = True
-
-st.markdown("</div>", unsafe_allow_html=True)
+        st.session_state["file_processed"] = False
 
 
-with st.form("list_credits_form"):
-    st.markdown(
-        '<div class="select-companies-label">Set CEC Price:</div>',
-        unsafe_allow_html=True,
-    )
-    price = st.number_input("Price per Credit ($)", min_value=0, step=1)
-    if int(st.session_state["parsed_rec"]["co2"]) > 0:
-        st.text(
-            str(st.session_state["parsed_rec"]["co2"])
-            + " x "
-            + str(price)
-            + " = $"
-            + str(int(st.session_state["parsed_rec"]["co2"]) * price)
-        )
-    submit = st.form_submit_button("List Credits")
+col, _ = st.columns(2)
+with col:
+    if st.session_state["file_processed"]:
+        with st.form("list_credits_form"):
+            st.write("### Set Credit Price: ")
+            price = st.number_input("Price per Credit ($)", min_value=0, step=1)
+            submit = st.form_submit_button("List Credits")
 
-    if submit:
-        parsed_rec = st.session_state["parsed_rec"]
-        contract = {
-            "datetime": datetime.now().strftime("%Y-%m-%d"),
-            "traded_to": "",
-            "REC_credits_traded": int(parsed_rec["co2"]),
-            "is_offer_in_market": True,
-            "price_of_contract": price,
-            "traded_from": st.session_state["username"] + "@gmail.com",
-        }
-        print(contract)
-        rec_collection.insert_one(contract)
+            if submit:
+                if int(st.session_state["parsed_rec"]["co2"]) > 0:
+                    st.text(
+                        str(st.session_state["parsed_rec"]["co2"])
+                        + " x "
+                        + str(price)
+                        + " = $"
+                        + str(int(st.session_state["parsed_rec"]["co2"]) * price)
+                    )
+                parsed_rec = st.session_state["parsed_rec"]
+                contract = {
+                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "timestamp": time.time(),
+                    "traded_to": "",
+                    "REC_credits_traded": int(parsed_rec["co2"]),
+                    "is_offer_in_market": True,
+                    "price_of_contract": price,
+                    "traded_from": st.session_state["username"] + "@gmail.com",
+                }
+                rec_collection.insert_one(contract)
+                st.session_state["file_processed"] = False
+                st.session_state["parsed_rec"] = {
+                    "co2": 0,
+                    "user": "test",
+                    "certifier": "test",
+                }
+                st.success("CEC Listed Successfully.", icon="🚀")
