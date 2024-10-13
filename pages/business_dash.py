@@ -15,7 +15,7 @@ def get_transaction_data():
     items = (
         db.business_rec.find(
             {
-                "traded_from": st.session_state.username + "@gmail.com",
+                "traded_from": st.session_state.username,
                 "is_offer_in_market": False,
             }
         )
@@ -26,8 +26,8 @@ def get_transaction_data():
     items = list(items)
     print(items)
     for i in items:
-        i['REC_credits_traded'] = "{:.0f}".format(i['REC_credits_traded'])
-        i['price_of_contract'] = "{:.2f}".format(i['price_of_contract'])
+        i["REC_credits_traded"] = "{:.0f}".format(i["REC_credits_traded"])
+        i["price_of_contract"] = "{:.2f}".format(i["price_of_contract"])
 
     return list(items)
 

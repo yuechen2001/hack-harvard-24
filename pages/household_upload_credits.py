@@ -169,7 +169,7 @@ if (
                     "company_credits_earned": int(
                         company_prices[selected_companies[0]]
                     ),
-                    "user": st.session_state.username + "@gmail.com",
+                    "user": st.session_state.username,
                     "REC_credits_traded": int(parsed_rec["co2"]),
                 }
                 household_rec_collection.insert_one(contract)

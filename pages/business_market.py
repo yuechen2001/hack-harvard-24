@@ -64,7 +64,7 @@ with col2:
 contracts = (
     rec_collection.find(
         {
-            "traded_from": {"$ne": st.session_state.username + "@gmail.com"},
+            "traded_from": {"$ne": st.session_state.username},
             "is_offer_in_market": True,
         }
     )
@@ -134,8 +134,7 @@ if available_credits:
                 {"_id": selected_credit["_id"]},
                 {
                     "$set": {
-                        "traded_to": st.session_state.get("username", "")
-                        + "@gmail.com",
+                        "traded_to": st.session_state.get("username", ""),
                         "is_offer_in_market": False,
                     }
                 },

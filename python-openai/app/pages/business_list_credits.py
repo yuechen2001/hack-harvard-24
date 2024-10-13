@@ -103,7 +103,7 @@ with col:
                     "REC_credits_traded": int(parsed_rec["co2"]),
                     "is_offer_in_market": True,
                     "price_of_contract": price,
-                    "traded_from": st.session_state["username"] + "@gmail.com",
+                    "traded_from": st.session_state["username"],
                 }
                 rec_collection.insert_one(contract)
                 st.session_state["file_processed"] = False
