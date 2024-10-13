@@ -12,7 +12,7 @@ st.title("Company Dashboard")
 # Function to get transaction data
 def get_transaction_data():
     db = st.session_state.dbClient["hackharvard"]
-    sell_items = (
+    items = (
         db.business_rec.find(
             {
                 "traded_from": st.session_state.username,
@@ -20,36 +20,8 @@ def get_transaction_data():
             }
         )
         .sort([("timestamp", -1)])
-        .limit(50)
+        .limit(10)
     )
-    buy_items = (
-        db.business_rec.find(
-            {
-                "traded_to": st.session_state.username,
-                "is_offer_in_market": False,
-            }
-        )
-        .sort([("timestamp", -1)])
-        .limit(50)
-    )
-
-    items = list(sell_items) + list(buy_items)
-    # items.sort([("timestamp", -1)])
-    #
-    # items = list(items)
-    print(items)
-    for i in items:
-        i["REC_credits_traded"] = "{:.0f}".format(i["REC_credits_traded"])
-        i["price_of_contract"] = "{:.2f}".format(i["price_of_contract"])
-        if i['traded_to'] == st.session_state.username:
-            i["price_of_contract"] = -float(i["price_of_contract"])
-            i["price_of_contract"] = "{:.2f}".format(i["price_of_contract"])
-            i['traded_to'] = i['traded_from']
-        elif i['traded_from'] == st.session_state.username:
-            i['REC_credits_traded'] = -float(i['REC_credits_traded'])
-            i["REC_credits_traded"] = "{:.0f}".format(i["REC_credits_traded"])
-            i['traded_from'] = i['traded_to']
-
     return list(items)
 
 
@@ -159,9 +131,9 @@ df = pd.DataFrame(data)
 df.rename(
     columns={
         "datetime": "Date & Time",
-        "traded_to": "Company",
-        "REC_credits_traded": "CEC Credits",
-        "price_of_contract": "Change in Balance (USD)",
+        "traded_to": "Company Traded To",
+        "REC_credits_traded": "CEC Credits Obtained",
+        "price_of_contract": "Total Value of Contract (USD)",
     },
     inplace=True,
 )

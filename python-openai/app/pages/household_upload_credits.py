@@ -7,7 +7,7 @@ import streamlit as st
 from openai import OpenAI
 from APIKeys import OPEN_AI_API_KEY
 from navigation import make_sidebar
-from hedera_utils import store_consumer_credit, display_blockchain_notification
+
 # Initialize Sidebar and MongoDB Connection
 make_sidebar()
 db = st.session_state.dbClient["hackharvard"]
@@ -40,7 +40,7 @@ def parse_rec(rec):
             max_tokens=150,
             n=1,
             stop=None,
-            temperature=0.2,
+            temperature=0.4,
         )
         if response.choices[0].message.content is not None:
             return json.loads(response.choices[0].message.content)
@@ -65,41 +65,33 @@ with col1:
             use_column_width=True,
         )
 
-
-        print(st.session_state['file_processed'])
         if not st.session_state["file_processed"]:
-            if not st.session_state["file_processed"]:
-                time.sleep(2)
-                pytesseract.pytesseract.tesseract_cmd = (
-                    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-                )
-                extracted_text = pytesseract.image_to_string(image)
-                parsed_rec = parse_rec(extracted_text)
-                st.session_state["parsed_rec"] = parsed_rec
-            else:
-                parsed_rec = st.session_state["parsed_rec"]
+            time.sleep(2)
+            pytesseract.pytesseract.tesseract_cmd = (
+                r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+            )
+            extracted_text = pytesseract.image_to_string(image)
+            parsed_rec = parse_rec(extracted_text)
+            st.session_state["parsed_rec"] = parsed_rec
+        else:
+            parsed_rec = st.session_state["parsed_rec"]
+
+        st.text(f"Certifier: {parsed_rec['certifier']}")
+        st.text(f"Awardee: {parsed_rec['user']}")
+        st.text(f"CO₂ Offset (metric tonnes): {parsed_rec['co2']}")
+
+        if not st.session_state["file_processed"]:
             with st.spinner("Processing..."):
-                time.sleep(1)
+                time.sleep(2)
 
-            st.text(f"Certifier: {parsed_rec['certifier']}")
-            st.text(f"Awardee: {parsed_rec['user']}")
-            st.text(f"CO₂ Offset (metric tonnes): {parsed_rec['co2']}")
-
-            if not st.session_state["file_processed"]:
-                with st.spinner("Processing..."):
-                    time.sleep(2)
-
-            print(st.session_state['username'])
-            print(parsed_rec['user'])
-            if st.session_state['username'].lower() in parsed_rec['user'].lower():
-                st.session_state["file_processed"] = True
-                print(st.session_state["file_processed"])
-                st.success("REC Verified")
-            else:
-                st.error("REC Invalid")
+        if parsed_rec["co2"] == "250":
+            st.session_state["file_processed"] = True
+            st.success("REC Verified")
+        else:
+            st.error("REC Invalid")
 
 # Company Selection in Column 2
-if st.session_state["file_processed"] and st.session_state['username'].lower() in parsed_rec['user'].lower():
+if st.session_state["file_processed"] and parsed_rec["co2"] == "250":
     with col2:
 
         st.write("### Select company to trade with: ")
@@ -156,7 +148,7 @@ if st.session_state["file_processed"] and st.session_state['username'].lower() i
 _, submit_col, _ = st.columns([2, 1, 2])
 if (
     st.session_state["file_processed"]
-    and st.session_state['username'].lower() in parsed_rec['user'].lower()
+    and st.session_state["parsed_rec"]["co2"] == "250"
     and selected_companies
 ):
     with submit_col:
@@ -166,20 +158,16 @@ if (
                 parsed_rec = st.session_state["parsed_rec"]
                 contract = {
                     "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "timestamp": time.time(),
                     "traded_to": selected_companies[0],
                     "company_credits_earned": int(
                         company_prices[selected_companies[0]]
                     ),
-                    "user": st.session_state.username + '@gmail.com',
+                    "user": st.session_state.username + "@gmail.com",
                     "REC_credits_traded": int(parsed_rec["co2"]),
                 }
                 household_rec_collection.insert_one(contract)
-                # Store on blockchain
-                store_consumer_credit(contract)  # Blockchain function
-                
-                # Display toast notification
-                if store_consumer_credit(contract):
-                    display_blockchain_notification()
+
             st.session_state["submitted"] = True
             st.session_state["file_processed"] = False
             st.session_state["parsed_rec"] = {

@@ -2,9 +2,6 @@ import time
 import streamlit as st
 import pandas as pd
 from navigation import make_sidebar
-from hedera_utils import store_company_data
-from hedera_utils import display_blockchain_notification
-
 
 # Initialize Sidebar
 make_sidebar()
@@ -61,7 +58,7 @@ with col1:
 
 # Slider for maximum price of contracts
 with col2:
-    max_price = st.slider("Maximum Price ($)", 0.0, 100000.0, 100000.0, step=500.0)
+    max_price = st.slider("Maximum Price ($)", 0.0, 100000.0, 1000.0, step=500.0)
 
 # Fetch available contracts from the database
 contracts = (
@@ -122,7 +119,10 @@ if available_credits:
     with submit_col:
         if st.button("Purchase Certificate"):
             selected_credit = selected_contracts[0][0]
-            total_cost = selected_credit["price_of_contract"]
+            total_cost = (
+                int(selected_credit["REC_credits_traded"])
+                * selected_credit["price_of_contract"]
+            )
 
             # Fetch company details
             company = list(
@@ -151,9 +151,7 @@ if available_credits:
                     }
                 },
             )
-            # Display toast notification
-            if store_company_data(company):
-                display_blockchain_notification()
+
             # Success message and rerun
             st.success("Certificate Purchased Successfully.", icon="🚀")
             time.sleep(2)

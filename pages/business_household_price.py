@@ -13,15 +13,21 @@ st.write(f"### Set Credit Price: ")
 
 col, _ = st.columns(2)
 
+collection = st.session_state.dbClient["hackharvard"]["company"]
+
 with col:
     with st.form("list_credits_form"):
-        price = st.number_input("Price per Credit ($)", min_value=0, step=1)
+        company = list(
+            collection.find({"name": st.session_state["username"]})
+        )[0]
+        print(company)
+        price = st.number_input("Price per Credit ($)", min_value=0, step=1, value=company['price_per_REC_credit'])
         update = st.form_submit_button("Update")
 
         if update:
+            # Update the document
             collection = st.session_state.dbClient["hackharvard"]["company"]
 
-            # Update the document
             result = collection.update_one(
                 {
                     "name": st.session_state.username
