@@ -15,7 +15,7 @@ def get_transaction_data():
     items = (
         db.business_rec.find(
             {
-                "traded_from": st.session_state.username + "@gmail.com",
+                "traded_from": st.session_state.username,
                 "is_offer_in_market": False,
             }
         )
