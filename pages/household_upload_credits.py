@@ -65,33 +65,39 @@ with col1:
             use_column_width=True,
         )
 
-        if not st.session_state["file_processed"]:
-            time.sleep(2)
-            pytesseract.pytesseract.tesseract_cmd = (
-                r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-            )
-            extracted_text = pytesseract.image_to_string(image)
-            parsed_rec = parse_rec(extracted_text)
-            st.session_state["parsed_rec"] = parsed_rec
-        else:
-            parsed_rec = st.session_state["parsed_rec"]
 
-        st.text(f"Certifier: {parsed_rec['certifier']}")
-        st.text(f"Awardee: {parsed_rec['user']}")
-        st.text(f"CO₂ Offset (metric tonnes): {parsed_rec['co2']}")
-
+        print(st.session_state['file_processed'])
         if not st.session_state["file_processed"]:
-            with st.spinner("Processing..."):
+            if not st.session_state["file_processed"]:
                 time.sleep(2)
+                pytesseract.pytesseract.tesseract_cmd = (
+                    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+                )
+                extracted_text = pytesseract.image_to_string(image)
+                parsed_rec = parse_rec(extracted_text)
+                st.session_state["parsed_rec"] = parsed_rec
+            else:
+                parsed_rec = st.session_state["parsed_rec"]
 
-        if parsed_rec["co2"] == "250":
-            st.session_state["file_processed"] = True
-            st.success("REC Verified")
-        else:
-            st.error("REC Invalid")
+            st.text(f"Certifier: {parsed_rec['certifier']}")
+            st.text(f"Awardee: {parsed_rec['user']}")
+            st.text(f"CO₂ Offset (metric tonnes): {parsed_rec['co2']}")
+
+            if not st.session_state["file_processed"]:
+                with st.spinner("Processing..."):
+                    time.sleep(2)
+
+            print(st.session_state['username'])
+            print(parsed_rec['user'])
+            if st.session_state['username'].lower() in parsed_rec['user'].lower():
+                st.session_state["file_processed"] = True
+                print(st.session_state["file_processed"])
+                st.success("REC Verified")
+            else:
+                st.error("REC Invalid")
 
 # Company Selection in Column 2
-if st.session_state["file_processed"] and parsed_rec["co2"] == "250":
+if st.session_state["file_processed"] and st.session_state['username'].lower() in parsed_rec['user'].lower():
     with col2:
 
         st.write("### Select company to trade with: ")

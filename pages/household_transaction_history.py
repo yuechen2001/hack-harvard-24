@@ -15,7 +15,7 @@ def get_data():
     print(items)
 
     for i in items:
-        i['company_credits_earned'] = "{:.2f}".format(i['company_credits_earned'])
+        i['company_credits_earned'] = "{:.2f}".format(i['company_credits_earned'] * i['REC_credits_traded'])
         i['REC_credits_traded'] = "{:.0f}".format(i['REC_credits_traded'])
 
     return items
