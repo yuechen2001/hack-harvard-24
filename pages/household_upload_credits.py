@@ -66,9 +66,9 @@ with col1:
         )
 
         if not st.session_state["file_processed"]:
-            time.sleep(2)
+            time.sleep(1)
             pytesseract.pytesseract.tesseract_cmd = (
-                r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+                "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
             )
             extracted_text = pytesseract.image_to_string(image)
             parsed_rec = parse_rec(extracted_text)
@@ -82,7 +82,7 @@ with col1:
 
         if not st.session_state["file_processed"]:
             with st.spinner("Processing..."):
-                time.sleep(2)
+                time.sleep(1)
 
         if parsed_rec["co2"] == "250":
             st.session_state["file_processed"] = True
@@ -154,7 +154,7 @@ if (
     with submit_col:
         if st.button("Transfer Contract"):
             with st.spinner("Transferring..."):
-                time.sleep(2)
+                time.sleep(1)
                 parsed_rec = st.session_state["parsed_rec"]
                 contract = {
                     "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
