@@ -6,6 +6,8 @@ from PIL import Image
 import json
 import time
 
+from hedera_utils import store_market_transaction
+from hedera_utils import display_blockchain_notification
 from APIKeys import OPEN_AI_API_KEY, MONGO_URI
 from navigation import make_sidebar
 from datetime import datetime
@@ -106,6 +108,10 @@ with col:
                     "traded_from": st.session_state["username"],
                 }
                 rec_collection.insert_one(contract)
+                # Store on blockchain
+                store_market_transaction(contract)  # Blockchain function
+                if store_market_transaction(contract):
+                    display_blockchain_notification()
                 st.session_state["file_processed"] = False
                 st.session_state["parsed_rec"] = {
                     "co2": 0,

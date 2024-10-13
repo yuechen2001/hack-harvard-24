@@ -2,6 +2,9 @@ import time
 import streamlit as st
 import pandas as pd
 from navigation import make_sidebar
+from hedera_utils import store_company_data
+from hedera_utils import display_blockchain_notification2
+
 
 # Initialize Sidebar
 make_sidebar()
@@ -148,7 +151,9 @@ if available_credits:
                     }
                 },
             )
-
+            # Display toast notification
+            if store_company_data(company):
+                display_blockchain_notification2()
             # Success message and rerun
             st.success("Certificate Purchased Successfully.", icon="🚀")
             time.sleep(2)
