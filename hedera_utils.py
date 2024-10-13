@@ -18,14 +18,10 @@ load_dotenv()
 # Load and convert credentials
 HEDERA_OPERATOR_ID = os.getenv("HEDERA_OPERATOR_ID")
 HEDERA_OPERATOR_KEY = os.getenv("HEDERA_OPERATOR_KEY")
-HEDERA_CONTRACT_ID = os.getenv("HEDERA_CONTRACT_ID")
+HEDERA_CONSUMER_CONTRACT_ID = os.getenv("HEDERA_CONSUMER_CONTRACT_ID")
+HEDERA_COMPANY_CONTRACT_ID = os.getenv("HEDERA_COMPANY_CONTRACT_ID")
+HEDERA_MARKET_CONTRACT_ID = os.getenv("HEDERA_MARKET_CONTRACT_ID")
 
-if not HEDERA_OPERATOR_ID or not HEDERA_OPERATOR_KEY or not HEDERA_CONTRACT_ID:
-    raise ValueError("Hedera credentials not set. Please check your .env file.")
-
-# Debugging: Print loaded environment variables
-print(f"HEDERA_OPERATOR_ID: {HEDERA_OPERATOR_ID}")
-print(f"HEDERA_CONTRACT_ID: {HEDERA_CONTRACT_ID}")
 
 # Convert string IDs to Hedera SDK objects
 operator_id = AccountId.fromString(HEDERA_OPERATOR_ID)
@@ -60,7 +56,7 @@ def store_consumer_credit(transaction):
         # Create the contract execute transaction without freezing or signing manually
         txn = (
             ContractExecuteTransaction()
-            .setContractId(ContractId.fromString(HEDERA_CONTRACT_ID))
+            .setContractId(ContractId.fromString(HEDERA_CONSUMER_CONTRACT_ID))
             .setGas(1000000)
             .setFunction("storeTransaction", params)
         )
@@ -120,7 +116,7 @@ def store_market_transaction(transaction):
 
         txn = (
             ContractExecuteTransaction()
-            .setContractId(ContractId.fromString(HEDERA_CONTRACT_ID))
+            .setContractId(ContractId.fromString(HEDERA_MARKET_CONTRACT_ID))
             .setGas(1000000)
             .setFunction("storeMarketTransaction", params)
         )
@@ -160,7 +156,7 @@ def store_company_data(transaction):
 
         txn = (
             ContractExecuteTransaction()
-            .setContractId(ContractId.fromString(HEDERA_CONTRACT_ID))
+            .setContractId(ContractId.fromString(HEDERA_COMPANY_CONTRACT_ID))
             .setGas(1000000)
             .setFunction("storeCompanyData", params)
         )
@@ -187,15 +183,14 @@ def store_company_data(transaction):
 
 
 transaction = {
-    "datetime": "2024-10-12 21:45:28",
-    "traded_to": "business",
-    "REC_credits_traded": 250,
-    "price_of_contract": 3,
-    "is_offer_in_market": True,
-    "traded_from": "consumer@gmail.com",
+    "name": "david",
+    "image_url": "https://random.com",
+    "price_per_REC_credit": 250,
+    "carbon_balance": 10,
+    "money": 1000,
 }
 
-txn_id = store_market_transaction(transaction)
+txn_id = store_company_data(transaction)
 
 if txn_id:
     print(f"Transaction stored with ID: {txn_id}")

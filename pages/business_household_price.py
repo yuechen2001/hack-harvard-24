@@ -1,6 +1,7 @@
 from datetime import datetime
 import streamlit as st
-
+from hedera_utils import store_company_data
+from hedera_utils import display_blockchain_notification
 from navigation import make_sidebar
 
 st.title("Set Credits to Spend per Household CEC credit")
@@ -32,5 +33,22 @@ with col:
 
             if result.modified_count > 0:
                 st.success("Credit Price Updated.")
+                # Fetch the updated company data to store on the blockchain
+                company_data = collection.find_one({"name": st.session_state.username})
+
+                # Store the updated company data on the blockchain
+                store_company_data(
+                    {
+                        "name": company_data["name"],
+                        "image_url": company_data["image_url"],
+                        "price_per_REC_credit": company_data["price_per_REC_credit"],
+                        "carbon_balance": company_data["carbon_balance"],
+                        "money": company_data["money"],
+                    }
+                )
+                # After successfully storing on the blockchain
+                if store_company_data(company_data):
+                    display_blockchain_notification()
+
             else:
                 st.warning("No document found with the specified company.")
