@@ -5,7 +5,7 @@
 - **Eshan Singhal**
 - **Zhu Yuechen**
 
-**Devpost**: [TradeREC on Devpost](https://devpost.com)
+**Devpost**: [TradeREC on Devpost](https://devpost.com/software/energy-trading)
 
 
 ## 📖 Overview
